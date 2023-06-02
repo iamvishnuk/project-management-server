@@ -25,7 +25,11 @@ const userData = new mongoose.Schema({
     project: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "project"
-    }]
+    }],
+    verified: {
+        type: Boolean,
+        default: false
+    }
 })
 
 module.exports = mongoose.model("user", userData)
