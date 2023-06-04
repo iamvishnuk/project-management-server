@@ -1,21 +1,20 @@
 const nodemailer = require("nodemailer")
+require('dotenv').config()
 
 module.exports = async (email, subject, text) => {
     try {
-        let testAccount = await nodemailer.createTestAccount()
-
+        console.log("send mail function invoked")
         let transporter = nodemailer.createTransport({
-            host: "smtp.ethereal.email",
+            host: process.env.HOST,
             port: 587,
-            secure: false, // true for 465, false for other ports
             auth: {
-                user: testAccount.user, // generated ethereal user
-                pass: testAccount.pass, // generated ethereal password
+                user: process.env.USER, // generated ethereal user
+                pass: process.env.PASS, // generated ethereal password
             },
         });
 
         let info = await transporter.sendMail({
-            from: "vishnu@gmail.com ",
+            from: process.env.USER,
             to: email,
             subject: subject,
             text: text

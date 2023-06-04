@@ -25,9 +25,11 @@ const userRegisteration = async (req, res) => {
                 token: crypto.randomBytes(32).toString("hex")
             }).save()
 
+            console.log(token.token)
+
             const url = `http://localhost:5173/user/${userDetails._id}/verify/${token.token}`
-            await sendMail(email,"Verfity Email",url)
-            res.status(201).json({ userId: response._id, created: true })
+            await sendMail(email, "Verfity Email", url)
+            res.status(200).json({ userId: userDetails._id, created: true, message: "A verification like send to email" })
         }
     } catch (error) {
         console.error(error.message)
@@ -35,6 +37,30 @@ const userRegisteration = async (req, res) => {
     }
 }
 
+const userLogin = async (req, res) => {
+    try {
+        const { email, password } = req.body
+        const user = await Users.findOne({ email: email })
+        console.log(user)
+        if (user === null) {
+            return res.status(404).json({ logedIn: false, message: "Invalid emaild" })
+        } else {
+            bycrpt.compare(password, user.password).then(status => {
+                if (status) {
+                    return res.status(200).json({ logedIn: true, userId: user._id, message: "Successfully Loged In" })
+                } else {
+                    return res.status(404).send({ logedIn: false, message: "Wrong password" })
+                }
+            })
+        }
+
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json({ error: error.message })
+    }
+}
+
 module.exports = {
-    userRegisteration
+    userRegisteration,
+    userLogin,
 }
