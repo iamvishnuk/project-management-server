@@ -3,6 +3,8 @@ const Users = require("../Model/user-model")
 const Token = require("../Model/token-model")
 const sendMail = require("../utils/sendEmail")
 const crypto = require("crypto")
+const jwt = require("jsonwebtoken")
+require("dotenv").config()
 
 
 const userRegisteration = async (req, res) => {
@@ -45,13 +47,15 @@ const userLogin = async (req, res) => {
         if (user === null) {
             return res.status(404).json({ logedIn: false, message: "Invalid emaild" })
         } else {
-            bycrpt.compare(password, user.password).then(status => {
-                if (status) {
-                    return res.status(200).json({ logedIn: true, userId: user._id, message: "Successfully Loged In" })
-                } else {
-                    return res.status(404).send({ logedIn: false, message: "Wrong password" })
-                }
-            })
+            const status = bycrpt.compare(password, user.password)
+            if (status) {
+                const userId = user._id
+                const token = jwt.sign({ userId }, process.env.JWT_SECRET_KEY, { expiresIn: 300000 })
+
+                return res.status(200).json({ logedIn: true, token: token, userId: user._id, message: "Successfully Loged In" })
+            } else {
+                return res.status(404).send({ logedIn: false, message: "Wrong password" })
+            }
         }
 
     } catch (error) {

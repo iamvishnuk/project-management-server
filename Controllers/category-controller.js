@@ -26,7 +26,6 @@ const getCategoryData = async (req, res) => {
     try {
 
         const categoryData = await Category.find({})
-        console.log(categoryData)
         res.status(200).json({ data: categoryData })
 
     } catch (error) {
@@ -36,7 +35,12 @@ const getCategoryData = async (req, res) => {
 
 const deleteCategory = async (req, res) => {
     try {
-        console.log(req.body)
+        const { deleteCategoryId } = req.params
+        console.log(deleteCategoryId)
+        const response = await Category.deleteOne({ _id: deleteCategoryId })
+        if(response) {
+            res.status(200).json({ delete: true, message: "successfully delete the category" })
+        }
     } catch (error) {
         console.log(error)
     }
