@@ -3,7 +3,6 @@ require('dotenv').config()
 
 module.exports = async (email, subject, text) => {
     try {
-        console.log("send mail function invoked")
         let transporter = nodemailer.createTransport({
             host: process.env.HOST,
             port: 587,
@@ -19,7 +18,6 @@ module.exports = async (email, subject, text) => {
             subject: subject,
             text: text
         })
-        console.log("email send successfully")
         console.log(info.messageId)
     } catch (error) {
         console.log("something went wrong")
