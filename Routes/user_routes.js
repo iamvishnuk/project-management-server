@@ -1,6 +1,6 @@
 const { createCategory, getCategoryData, deleteCategory, editCategory } = require("../Controllers/category-controller")
 const { emailVerification } = require("../Controllers/email-verification")
-const { userRegisteration, userLogin, forgotPasswordSendMail, forgotPasswordUrlVerify, forgotPasswordChangePassword, signupWithGoogle, loginWithGoogle } = require("../Controllers/user_controller")
+const { userRegisteration, userLogin, forgotPasswordSendMail, forgotPasswordUrlVerify, forgotPasswordChangePassword, signupWithGoogle, loginWithGoogle, isUserAuth } = require("../Controllers/user_controller")
 const { userAuthentication } = require("../Middlewares/userAuth")
 const router = require("express").Router()
 
@@ -14,6 +14,7 @@ router.get("/change-password/:id/verify/:token",forgotPasswordUrlVerify)
 router.post("/change-password/:id",forgotPasswordChangePassword)
 router.post("/google-signup",signupWithGoogle)
 router.post("/google-login",loginWithGoogle)
+router.get("/is-auth-user",userAuthentication,isUserAuth)
 
 // PROJECT CATEGORY MANAGEMENT
 router.post("/create-category",userAuthentication,createCategory)

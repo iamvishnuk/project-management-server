@@ -103,7 +103,7 @@ const forgotPasswordChangePassword = async (req, res) => {
         if (user) {
             const passwordMatch = await bcrypt.compare(newPassword, user.password)
             if (passwordMatch) {
-                res.json({ updated: false, message: "New password and the current password are the same" })
+                res.json({ updated: false, message: "New password and the old password are the same" })
             } else {
                 newPassword = await bcrypt.hash(newPassword, 10)
                 await Users.updateOne({ _id: userId }, {
@@ -158,6 +158,19 @@ const loginWithGoogle = async (req, res) => {
     }
 }
 
+const isUserAuth = async (req, res) => {
+    try {
+        const user = await Users.findOne({_id: req.userId})
+        if(user !== null) {
+            res.status(200).json({auth: true, userDeatils: user})
+        } else {
+            res.status(404).json({auth: false})
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 module.exports = {
     userRegisteration,
     userLogin,
@@ -165,5 +178,6 @@ module.exports = {
     forgotPasswordUrlVerify,
     forgotPasswordChangePassword,
     signupWithGoogle,
-    loginWithGoogle
+    loginWithGoogle,
+    isUserAuth
 }

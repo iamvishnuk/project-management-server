@@ -10,7 +10,7 @@ module.exports.userAuthentication = async (req, res, next) => {
         } else {
             jwt.verify(token, process.env.JWT_SECRET_KEY,(err,decode) => {
                 if(err) {
-                    res.json({ auth: false, message: "Invalid token"})
+                    res.status(500).json({ auth: false, message: "Invalid token"})
                 } else {
                     req.userId = decode.userId
                     next()
