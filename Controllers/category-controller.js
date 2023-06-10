@@ -69,4 +69,9 @@ const editCategory = async (req, res) => {
     }
 }
 
-module.exports = { createCategory, getCategoryData, deleteCategory, editCategory } 
+module.exports = { 
+    createCategory, 
+    getCategoryData, 
+    deleteCategory, 
+    editCategory 
+} 

@@ -29,7 +29,11 @@ const userData = new mongoose.Schema({
     verified: {
         type: Boolean,
         default: false
-    }
+    },
+    member: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user"
+    }]
 })
 
 module.exports = mongoose.model("user", userData)
