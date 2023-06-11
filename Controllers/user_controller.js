@@ -45,7 +45,8 @@ const userLogin = async (req, res) => {
         if (user === null) {
             return res.status(404).json({ logedIn: false, message: "Invalid emaild" })
         } else {
-            const status = bcrypt.compare(password, user.password)
+            const status = await bcrypt.compare(password, user.password)
+            console.log(status)
             if (status) {
                 const userId = user._id
                 const token = jwt.sign({ userId }, process.env.JWT_SECRET_KEY, { expiresIn: 300000 })
@@ -86,7 +87,7 @@ const forgotPasswordUrlVerify = async (req, res) => {
 
         const { id, token } = req.params
         const validUrl = await Token.findOne({ userId: id, token: token })
-        if (!validUrl) return res.json({ auth: false, message: "invalid url" })
+        if (!validUrl) return res.status(404).json({ auth: false, message: "invalid url" })
         await Token.deleteOne({ token: token })
         res.status(200).json({ auth: true, message: "Valid url" })
 
@@ -96,6 +97,7 @@ const forgotPasswordUrlVerify = async (req, res) => {
 }
 
 const forgotPasswordChangePassword = async (req, res) => {
+    console.log("this function called")
     try {
         const userId = req.params.id
         let { newPassword } = req.body
@@ -103,7 +105,7 @@ const forgotPasswordChangePassword = async (req, res) => {
         if (user) {
             const passwordMatch = await bcrypt.compare(newPassword, user.password)
             if (passwordMatch) {
-                res.json({ updated: false, message: "New password and the old password are the same" })
+                res.status(304).json({ updated: false, message: "New password and the old password are the same" })
             } else {
                 newPassword = await bcrypt.hash(newPassword, 10)
                 await Users.updateOne({ _id: userId }, {

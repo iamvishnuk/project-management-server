@@ -1,5 +1,6 @@
 const { createCategory, getCategoryData, deleteCategory, editCategory } = require("../Controllers/category-controller")
 const { emailVerification } = require("../Controllers/email-verification")
+const { getMemberAndCategory } = require("../Controllers/project-controller")
 const { sendInviteMail, getAllPeople } = require("../Controllers/team-controller")
 const { userRegisteration, userLogin, forgotPasswordSendMail, forgotPasswordUrlVerify, forgotPasswordChangePassword, signupWithGoogle, loginWithGoogle, isUserAuth } = require("../Controllers/user_controller")
 const { userAuthentication } = require("../Middlewares/userAuth")
@@ -26,6 +27,9 @@ router.post("/edit-category",userAuthentication,editCategory)
 // TEAM MANAGEMENT ROUTES
 router.post("/send-invite-mail",userAuthentication,sendInviteMail)
 router.get("/get-all-people",userAuthentication,getAllPeople)
+
+// PROJECT MANAGEMENT ROUTES
+router.get("/get-member-and-category",userAuthentication,getMemberAndCategory)
 
 
 module.exports = router

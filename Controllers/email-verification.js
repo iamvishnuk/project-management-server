@@ -7,7 +7,7 @@ const emailVerification = async (req, res) => {
         const user = await Users.findOne({ _id: id })
         if (!user) return res.status(400).json({ verified: false, message: "invalid like" })
 
-        const token = Token.findOne({ userId: id, token: req.params.token })
+        const token = await Token.findOne({ userId: id, token: req.params.token })
         if (!token) return res.status(400).json({ verified: false, message: "invalid lik" })
 
         await Users.updateOne({ _id: id }, { $set: { verified: true } })
