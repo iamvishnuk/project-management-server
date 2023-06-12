@@ -41,12 +41,10 @@ const userLogin = async (req, res) => {
     try {
         const { email, password } = req.body
         const user = await Users.findOne({ email: email })
-        console.log(user)
         if (user === null) {
             return res.status(404).json({ logedIn: false, message: "Invalid emaild" })
         } else {
             const status = await bcrypt.compare(password, user.password)
-            console.log(status)
             if (status) {
                 const userId = user._id
                 const token = jwt.sign({ userId }, process.env.JWT_SECRET_KEY, { expiresIn: 300000 })
@@ -97,7 +95,6 @@ const forgotPasswordUrlVerify = async (req, res) => {
 }
 
 const forgotPasswordChangePassword = async (req, res) => {
-    console.log("this function called")
     try {
         const userId = req.params.id
         let { newPassword } = req.body

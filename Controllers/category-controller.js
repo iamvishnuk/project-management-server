@@ -4,9 +4,7 @@ const createCategory = async (req, res) => {
     try {
 
         const { categoryName, categoryDescription } = req.body
-        console.log(req.userId)
         const found = await Category.findOne({ categoryName: categoryName })
-        console.log(found)
         if (found) {
             res.status(422).json({ message: "category name already exist" })
         } else {
@@ -38,7 +36,6 @@ const getCategoryData = async (req, res) => {
 const deleteCategory = async (req, res) => {
     try {
         const { deleteCategoryId } = req.params
-        console.log(deleteCategoryId)
         const response = await Category.deleteOne({ _id: deleteCategoryId })
         if (response) {
             res.status(200).json({ delete: true, message: "successfully delete the category" })
@@ -52,9 +49,9 @@ const editCategory = async (req, res) => {
     try {
         const { _id, categoryName, categoryDescription } = req.body
         if (categoryName == "") {
-            res.json({ update: false, message: "Category name is must" })
+            res.status(404).json({ update: false, message: "Category name is must" })
         } else if (categoryDescription == "") {
-            res.json({ update: false, message: "Category description is must" })
+            res.status(404).json({ update: false, message: "Category description is must" })
         } else {
             await Category.updateOne({ _id: _id }, {
                 $set:
