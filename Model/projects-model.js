@@ -24,7 +24,11 @@ const projectData = new mongoose.Schema({
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
-    }
+    },
+    members: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user"
+    }]
 })
 
 module.exports = mongoose.model("project", projectData)

@@ -73,10 +73,65 @@ const getEditProjectDetails = async (req, res) => {
     }
 }
 
+const editProject = async (req, res) => {
+    try {
+
+        const projectId = req.body._id
+        const projectName = req.body.projectName
+        const projectCategory = req.body.projectCategory._id || req.body.projectCategory
+        const projectUrl = req.body.projectUrl
+        const projectLead = req.body.projectLead._id || req.body.projectLead
+        const description = req.body.description
+         await Project.updateOne(
+            { _id: projectId },
+            {
+                $set:
+                {
+                    projectName: projectName,
+                    projectCategory: projectCategory,
+                    projectUrl: projectUrl,
+                    projectLead: projectLead,
+                    description:description
+                }
+            }
+        )
+        res.status(200).json({message: "successfully update the project details"})
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: "Internal server error" })
+    }
+}
+
+const getMembers = async (req, res) => {
+    try {
+        const userId = req.userId
+        const data = await Users.findOne({_id: userId}).populate("member")
+        res.status(200).json({data: data.member})
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json({message: "Interanl server error"})
+    }
+}
+
+const setProjectAccessMember = async (req, res) => {
+    try {
+        console.log(req.body)
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json({message: "Interanl server error"})
+    }
+}
+
+
+
 module.exports = {
     getMemberAndCategory,
     createProject,
     getAllProjects,
     deleteProject,
-    getEditProjectDetails
+    getEditProjectDetails,
+    editProject,
+    getMembers,
+    setProjectAccessMember
 }
