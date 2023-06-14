@@ -43,7 +43,7 @@ const createProject = async (req, res) => {
 const getAllProjects = async (req, res) => {
     try {
         const userId = req.userId
-        const projects = await Project.find({ $or: [{ createdBy: userId }, { projectLead: userId }] }).populate("projectLead").populate("projectCategory")
+        const projects = await Project.find({ $or: [{ createdBy: userId }, { projectLead: userId }, { members: { $in: [userId] } }] }).populate("projectLead").populate("projectCategory")
         res.status(200).json({ projectDetails: projects })
     } catch (error) {
         console.log(error.message)
@@ -82,7 +82,7 @@ const editProject = async (req, res) => {
         const projectUrl = req.body.projectUrl
         const projectLead = req.body.projectLead._id || req.body.projectLead
         const description = req.body.description
-         await Project.updateOne(
+        await Project.updateOne(
             { _id: projectId },
             {
                 $set:
@@ -91,11 +91,11 @@ const editProject = async (req, res) => {
                     projectCategory: projectCategory,
                     projectUrl: projectUrl,
                     projectLead: projectLead,
-                    description:description
+                    description: description
                 }
             }
         )
-        res.status(200).json({message: "successfully update the project details"})
+        res.status(200).json({ message: "successfully update the project details" })
 
     } catch (error) {
         console.log(error)
@@ -106,23 +106,53 @@ const editProject = async (req, res) => {
 const getMembers = async (req, res) => {
     try {
         const userId = req.userId
-        const data = await Users.findOne({_id: userId}).populate("member")
-        res.status(200).json({data: data.member})
+        const data = await Users.findOne({ _id: userId }).populate("member")
+        res.status(200).json({ data: data.member })
     } catch (error) {
         console.log(error.message)
-        res.status(500).json({message: "Interanl server error"})
+        res.status(500).json({ message: "Interanl server error" })
     }
 }
 
 const setProjectAccessMember = async (req, res) => {
     try {
-        console.log(req.body)
+        const projectId = req.params.id
+        const data = req.body
+        const membersId = data.map(item => {
+            return item.value
+        })
+        console.log(membersId)
+        await Project.updateOne({ _id: projectId }, { $addToSet: { members: membersId } })
+        res.status(200).json({ message: "New members added successfully" })
+
     } catch (error) {
         console.log(error.message)
-        res.status(500).json({message: "Interanl server error"})
+        res.status(500).json({ message: "Interanl server error" })
     }
 }
 
+const getAcessMemberList = async (req, res) => {
+    try {
+        const projectId = req.params.projectId
+        const data = await Project.findOne({ _id: projectId }).populate("members")
+        res.status(200).json({ accessMemberList: data.members })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: "Interanl server error" })
+    }
+}
+
+const removeAccess = async (req, res) => {
+    try {
+        const memberId = req.params.memberId
+        const projectId = req.params.projectId
+        await Project.updateOne({ _id: projectId }, { $pull: { members: memberId } })
+        res.status(200).json({ message: "Removed project access" })
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json({ message: "Interanl server error" })
+    }
+}
 
 
 module.exports = {
@@ -133,5 +163,7 @@ module.exports = {
     getEditProjectDetails,
     editProject,
     getMembers,
-    setProjectAccessMember
+    setProjectAccessMember,
+    getAcessMemberList,
+    removeAccess
 }

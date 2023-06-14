@@ -148,7 +148,7 @@ const loginWithGoogle = async (req, res) => {
         if (user !== null) {
             const userId = user._id
             const token = jwt.sign({ userId }, process.env.JWT_SECRET_KEY, { expiresIn: 300000 })
-            res.status(200).json({ logedIn: true, token: token, user: user, message: "Successfully Loged In" })
+            res.status(200).json({ logedIn: true, token: token, userId: userId, message: "Successfully Loged In" })
         } else {
             res.status(404).json({logedIn: false, message: "User not found"})
         }

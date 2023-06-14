@@ -1,6 +1,6 @@
 const { createCategory, getCategoryData, deleteCategory, editCategory } = require("../Controllers/category-controller")
 const { emailVerification } = require("../Controllers/email-verification")
-const { getMemberAndCategory, createProject, getAllProjects, deleteProject, getEditProjectDetails, editProject, getMembers, setProjectAccessMember } = require("../Controllers/project-controller")
+const { getMemberAndCategory, createProject, getAllProjects, deleteProject, getEditProjectDetails, editProject, getMembers, setProjectAccessMember, getAcessMemberList, removeAccess } = require("../Controllers/project-controller")
 const { sendInviteMail, getAllPeople } = require("../Controllers/team-controller")
 const { userRegisteration, userLogin, forgotPasswordSendMail, forgotPasswordUrlVerify, forgotPasswordChangePassword, signupWithGoogle, loginWithGoogle, isUserAuth } = require("../Controllers/user_controller")
 const { userAuthentication } = require("../Middlewares/userAuth")
@@ -36,7 +36,9 @@ router.get('/delete-project/:id', userAuthentication, deleteProject)
 router.get("/get-edit-project-details/:id", userAuthentication, getEditProjectDetails)
 router.post("/edit-project", userAuthentication, editProject)
 router.get("/get-member",userAuthentication,getMembers)
-router.post("/give-access",userAuthentication,setProjectAccessMember)
+router.post("/give-access/:id",userAuthentication,setProjectAccessMember)
+router.get("/get-access-member-list/:projectId",userAuthentication,getAcessMemberList)
+router.get("/remove-access/:memberId/:projectId",userAuthentication,removeAccess)
 
 
 module.exports = router
