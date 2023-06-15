@@ -121,7 +121,6 @@ const setProjectAccessMember = async (req, res) => {
         const membersId = data.map(item => {
             return item.value
         })
-        console.log(membersId)
         await Project.updateOne({ _id: projectId }, { $addToSet: { members: membersId } })
         res.status(200).json({ message: "New members added successfully" })
 
