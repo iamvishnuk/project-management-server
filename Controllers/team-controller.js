@@ -61,7 +61,7 @@ const createTeam = async (req, res) => {
 const getTeam = async (req, res) => {
     try {
         const userId = req.userId
-        const teamData = await Team.find({ $or: [{ admin: userId }, { memeber: { $in: [userId] } }] })
+        const teamData = await Team.find({ $or: [{ admin: userId }, { members: { $in: [userId] } }] })
         res.status(200).json({ teamData: teamData })
     } catch (error) {
         console.log(error)
@@ -109,7 +109,6 @@ const addTeamMember = async (req, res) => {
     try {
         const teamId = req.params.teamId
         const { member } = req.body
-        console.log(req.body, req.params)
         const membersId = member.map(data => {
             return data.value
         })
@@ -121,6 +120,17 @@ const addTeamMember = async (req, res) => {
     }
 }
 
+const deleteTeam = async (req, res) => {
+    try {
+        const teamId = req.params.teamId
+        await Team.deleteOne({ _id: teamId })
+        res.status(200).json({ message: "Team delete successfully" })
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json({ message: "Internal server error" })
+    }
+}
+
 module.exports = {
     sendInviteMail,
     getAllPeople,
@@ -129,5 +139,6 @@ module.exports = {
     removePeople,
     getSingleTeamData,
     removeTeamMember,
-    addTeamMember
+    addTeamMember,
+    deleteTeam
 }
