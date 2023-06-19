@@ -31,9 +31,8 @@ const boardData = new mongoose.Schema({
                 required: true
             },
             taskId: {
-                type: String,
+                type: Number,
                 required: true,
-                default: String(Math.floor(Date.now() * 10))
             }
         }
     ]

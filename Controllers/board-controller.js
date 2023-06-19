@@ -22,7 +22,6 @@ const getBoardData = async (req, res) => {
     try {
         const projectId = req.params.projectId
         const boardData = await Board.find({ projectId: projectId }).populate("task.assignee")
-        console.log(boardData)
         res.status(200).json({ boardData: boardData })
     } catch (error) {
         console.log(error.message)
@@ -43,10 +42,11 @@ const deleteBoard = async (req, res) => {
 
 const createNewTask = async (req, res) => {
     try {
-        console.log("params :", req.params)
-        console.log("body :", req.body)
         const { projectId, boardId } = req.params
         const { taskType, shortSummary, description, assignee, priority } = req.body
+        const generateQniqueNumber = () => {
+            return Math.floor(Date.now() * Math.random() * 10)
+        }
         if (taskType === null || shortSummary === "" || priority === null) {
             res.status(400).json({ message: "Task type, short summary and priority are required" })
         } else {
@@ -61,7 +61,8 @@ const createNewTask = async (req, res) => {
                             shortSummary: shortSummary,
                             description: description,
                             assignee: assignee,
-                            priority: priority
+                            priority: priority,
+                            taskId: generateQniqueNumber()
                         }
                     }
                 })
@@ -73,9 +74,63 @@ const createNewTask = async (req, res) => {
     }
 }
 
+const dragAndDropTask = async (req, res) => {
+    try {
+        console.log(req.body)
+        const { destination, source } = req.body
+
+        const sourceBoard = await Board.findOne({ boardName: source.droppableId })
+        const sourceObject = sourceBoard.task.find(task => task.taskId === source.index)
+        await Board.updateOne(
+            { boardName: destination.droppableId },
+            {
+                $push: { task: sourceObject }
+            }
+        )
+
+        // await Board.updateOne(
+        //     {boardName: source.droppableId},
+        //     {$pull: {task: {"task.taskId" : source.index}}}
+        // )
+        await Board.updateOne(
+            { boardName: source.droppableId },
+            { $pull: { task: { taskId: source.index } } }
+        );
+        res.status(200).json({ updated: true })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: "Interanl server error" })
+    }
+}
+
+const editShortSummary = async (req, res) => {
+    try {
+        console.log(req.body)
+        const { value, boardName, taksId, } = req.body
+        const result = await Board.updateOne(
+            {
+                boardName,
+                'task._id': taksId
+            },
+            {
+                $set: {
+                    'task.$.shortSummary': value
+                }
+            },
+        )
+        console.log(result)
+        res.status(200).json({ updated: true })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: "Internal server error" })
+    }
+}
+
 module.exports = {
     createBoard,
     getBoardData,
     deleteBoard,
-    createNewTask
+    createNewTask,
+    dragAndDropTask,
+    editShortSummary
 }

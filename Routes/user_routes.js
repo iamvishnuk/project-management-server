@@ -1,4 +1,4 @@
-const { createBoard, getBoardData, deleteBoard, createNewTask } = require("../Controllers/board-controller")
+const { createBoard, getBoardData, deleteBoard, createNewTask, dragAndDropTask, editShortSummary } = require("../Controllers/board-controller")
 const { createCategory, getCategoryData, deleteCategory, editCategory } = require("../Controllers/category-controller")
 const { emailVerification } = require("../Controllers/email-verification")
 const { getMemberAndCategory, createProject, getAllProjects, deleteProject, getEditProjectDetails, editProject, getMembers, setProjectAccessMember, getAcessMemberList, removeAccess } = require("../Controllers/project-controller")
@@ -53,6 +53,8 @@ router.post("/create-board",userAuthentication,createBoard)
 router.get("/get-board-data/:projectId",userAuthentication,getBoardData)
 router.get("/delete-board/:boardId",userAuthentication,deleteBoard)
 router.post("/create-new-task/:projectId/:boardId",userAuthentication,createNewTask)
+router.post('/drag-drop-task',userAuthentication,dragAndDropTask)
+router.post("/edite-short-summary",userAuthentication,editShortSummary)
 
 
 module.exports = router
