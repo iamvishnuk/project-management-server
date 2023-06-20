@@ -21,11 +21,16 @@ const createBoard = async (req, res) => {
 const getBoardData = async (req, res) => {
     try {
         const projectId = req.params.projectId
-        const boardData = await Board.find({ projectId: projectId }).populate("task.assignee")
+        const boardData = await Board.find({ projectId: projectId })
+            .populate({
+                path: 'task.comments.userId',
+                model: 'user',
+            })
+            .populate('task.assignee');
         res.status(200).json({ boardData: boardData })
     } catch (error) {
         console.log(error.message)
-        res.status(500).json({ message: "Interanl server error" })
+        res.status(500).json({ message: "Internal server error" })
     }
 }
 
@@ -36,7 +41,7 @@ const deleteBoard = async (req, res) => {
         res.status(200).json({ message: "Board deleted successfully" })
     } catch (error) {
         console.log(error.message)
-        res.status(500).json({ message: "Interanl server error" })
+        res.status(500).json({ message: "Internal server error" })
     }
 }
 
@@ -70,7 +75,7 @@ const createNewTask = async (req, res) => {
         }
     } catch (error) {
         console.log(error.message)
-        res.status(500).json({ message: "Interanl server error" })
+        res.status(500).json({ message: "Internal server error" })
     }
 }
 
@@ -88,10 +93,6 @@ const dragAndDropTask = async (req, res) => {
             }
         )
 
-        // await Board.updateOne(
-        //     {boardName: source.droppableId},
-        //     {$pull: {task: {"task.taskId" : source.index}}}
-        // )
         await Board.updateOne(
             { boardName: source.droppableId },
             { $pull: { task: { taskId: source.index } } }
@@ -99,29 +100,106 @@ const dragAndDropTask = async (req, res) => {
         res.status(200).json({ updated: true })
     } catch (error) {
         console.log(error)
-        res.status(500).json({ message: "Interanl server error" })
+        res.status(500).json({ message: "Internal server error" })
     }
 }
 
-const editShortSummary = async (req, res) => {
+const editTask = async (req, res) => {
     try {
         console.log(req.body)
-        const { value, boardName, taksId, } = req.body
-        const result = await Board.updateOne(
+        const { value, boardName, taskId, fieldName } = req.body
+        const updateObject = {
+            [`task.$.${fieldName}`]: value.value || value
+        };
+        await Board.updateOne(
             {
                 boardName,
-                'task._id': taksId
+                'task._id': taskId
             },
             {
-                $set: {
-                    'task.$.shortSummary': value
-                }
-            },
+                $set: updateObject
+            }
         )
-        console.log(result)
         res.status(200).json({ updated: true })
     } catch (error) {
-        console.log(error)
+        console.log(error.message)
+        res.status(500).json({ message: "Internal server error" })
+    }
+}
+
+const getBoardNames = async (req, res) => {
+    try {
+        const boardNames = await Board.find({})
+        const result = boardNames.map(board => board.boardName)
+        res.status(200).json({ boardNames: result, message: "res send" })
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json({ message: "Internal server error" })
+    }
+}
+
+const changeBoard = async (req, res) => {
+    try {
+        console.log(req.body)
+        const { source, destination, taskId } = req.body
+        const sourceBoard = await Board.findOne({ boardName: source })
+        console.log(sourceBoard)
+        const sourceObject = sourceBoard.task.find(task => task.taskId === taskId)
+        console.log(sourceObject)
+        await Board.updateOne(
+            { boardName: destination },
+            {
+                $push: { task: sourceObject }
+            }
+        )
+        await Board.updateOne(
+            { boardName: source },
+            { $pull: { task: { taskId: taskId } } }
+        );
+        res.status(200).json({ updated: true })
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json({ message: "Internal server error" })
+    }
+}
+
+const addComment = async (req, res) => {
+    try {
+        console.log(req.body)
+        const { comment, userId, boardName, taskId } = req.body
+        if (comment === "") {
+            res.status(400).json({ message: "Please enter the command" })
+        } else {
+            const result = await Board.updateOne(
+                { boardName: boardName, "task.taskId": taskId },
+                {
+                    $push: {
+                        "task.$.comments": {
+                            userId: userId,
+                            message: comment
+                        }
+                    }
+                }
+            )
+            res.status(200).json({ commented: true })
+        }
+
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json({ message: "Internal server error" })
+    }
+}
+
+const deleteTask = async (req, res) => {
+    try {
+        const { boardName, taskId } = req.params
+        await Board.updateOne(
+            { boardName: boardName },
+            { $pull: { task: { taskId: taskId } } }
+        );
+        res.status(200).json({ deleted: true })
+    } catch (error) {
+        console.log(error.message)
         res.status(500).json({ message: "Internal server error" })
     }
 }
@@ -132,5 +210,10 @@ module.exports = {
     deleteBoard,
     createNewTask,
     dragAndDropTask,
-    editShortSummary
+    editTask,
+    getBoardData,
+    getBoardNames,
+    changeBoard,
+    addComment,
+    deleteTask
 }

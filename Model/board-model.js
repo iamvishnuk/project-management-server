@@ -11,7 +11,7 @@ const boardData = new mongoose.Schema({
     },
     task: [
         {
-            taskType:{
+            taskType: {
                 type: String,
                 required: true
             },
@@ -33,9 +33,21 @@ const boardData = new mongoose.Schema({
             taskId: {
                 type: Number,
                 required: true,
-            }
+            },
+            comments: [
+                {
+                    userId: {
+                        type: mongoose.Schema.Types.ObjectId,
+                        ref: "user"
+                    },
+                    message: {
+                        type: String,
+                        required: true
+                    }
+                }
+            ]
         }
     ]
 })
 
-module.exports = mongoose.model("board",boardData)
+module.exports = mongoose.model("board", boardData)
