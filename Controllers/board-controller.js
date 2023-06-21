@@ -48,12 +48,12 @@ const deleteBoard = async (req, res) => {
 const createNewTask = async (req, res) => {
     try {
         const { projectId, boardId } = req.params
-        const { taskType, shortSummary, description, assignee, priority } = req.body
+        const { taskType, shortSummary, description, assignee, priority, workHours } = req.body
         const generateQniqueNumber = () => {
             return Math.floor(Date.now() * Math.random() * 10)
         }
-        if (taskType === null || shortSummary === "" || priority === null) {
-            res.status(400).json({ message: "Task type, short summary and priority are required" })
+        if (taskType === null || shortSummary === "" || priority === null || workHours === null) {
+            res.status(400).json({ message: "Task type, short summary, work hours and priority are required" })
         } else {
             await Board.updateOne(
                 { _id: boardId, projectId: projectId },
@@ -67,6 +67,7 @@ const createNewTask = async (req, res) => {
                             description: description,
                             assignee: assignee,
                             priority: priority,
+                            workHours: workHours,
                             taskId: generateQniqueNumber()
                         }
                     }
@@ -81,7 +82,6 @@ const createNewTask = async (req, res) => {
 
 const dragAndDropTask = async (req, res) => {
     try {
-        console.log(req.body)
         const { destination, source } = req.body
 
         const sourceBoard = await Board.findOne({ boardName: source.droppableId })
@@ -106,7 +106,6 @@ const dragAndDropTask = async (req, res) => {
 
 const editTask = async (req, res) => {
     try {
-        console.log(req.body)
         const { value, boardName, taskId, fieldName } = req.body
         const updateObject = {
             [`task.$.${fieldName}`]: value.value || value
@@ -140,12 +139,9 @@ const getBoardNames = async (req, res) => {
 
 const changeBoard = async (req, res) => {
     try {
-        console.log(req.body)
         const { source, destination, taskId } = req.body
         const sourceBoard = await Board.findOne({ boardName: source })
-        console.log(sourceBoard)
         const sourceObject = sourceBoard.task.find(task => task.taskId === taskId)
-        console.log(sourceObject)
         await Board.updateOne(
             { boardName: destination },
             {
@@ -165,12 +161,11 @@ const changeBoard = async (req, res) => {
 
 const addComment = async (req, res) => {
     try {
-        console.log(req.body)
         const { comment, userId, boardName, taskId } = req.body
         if (comment === "") {
             res.status(400).json({ message: "Please enter the command" })
         } else {
-            const result = await Board.updateOne(
+            await Board.updateOne(
                 { boardName: boardName, "task.taskId": taskId },
                 {
                     $push: {
@@ -204,6 +199,60 @@ const deleteTask = async (req, res) => {
     }
 }
 
+const deleteComment = async (req, res) => {
+    try {
+        const { boardName, taskId, commentId } = req.params
+        await Board.updateOne(
+            {
+                boardName: boardName,
+                "task.taskId": taskId
+            },
+            {
+                $pull: {
+                    "task.$.comments": {
+                        _id: commentId
+                    }
+                }
+            }
+        )
+
+        res.status(200).json({ deleted: true })
+
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json({ message: "Internal server error" })
+    }
+}
+
+const changeTimeSpend = async (req, res) => {
+    try {
+        console.log(req.body)
+        const { value, boardName, taskId, fieldName, workHours } = req.body
+        if (Number(value) > workHours) {
+            res.status(400).json({ message: "Time spend is greater than the work hour" })
+        } else {
+            const updateObject = {
+                [`task.$.${fieldName}`]: value.value || value
+            };
+            console.log(Number(value))
+            await Board.updateOne(
+                {
+                    boardName,
+                    'task._id': taskId
+                },
+                {
+                    $set: updateObject
+                }
+            )
+            res.status(200).json({ updated: true })
+        }
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json({ message: "Internal server error" })
+    }
+}
+
+
 module.exports = {
     createBoard,
     getBoardData,
@@ -215,5 +264,7 @@ module.exports = {
     getBoardNames,
     changeBoard,
     addComment,
-    deleteTask
+    deleteTask,
+    deleteComment,
+    changeTimeSpend
 }

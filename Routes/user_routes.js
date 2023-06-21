@@ -1,4 +1,4 @@
-const { createBoard, getBoardData, deleteBoard, createNewTask, dragAndDropTask, editTask, getBoardNames, changeBoard, addComment, deleteTask } = require("../Controllers/board-controller")
+const { createBoard, getBoardData, deleteBoard, createNewTask, dragAndDropTask, editTask, getBoardNames, changeBoard, addComment, deleteTask, deleteComment, changeTimeSpend } = require("../Controllers/board-controller")
 const { createCategory, getCategoryData, deleteCategory, editCategory } = require("../Controllers/category-controller")
 const { emailVerification } = require("../Controllers/email-verification")
 const { getMemberAndCategory, createProject, getAllProjects, deleteProject, getEditProjectDetails, editProject, getMembers, setProjectAccessMember, getAcessMemberList, removeAccess } = require("../Controllers/project-controller")
@@ -56,9 +56,11 @@ router.post("/create-new-task/:projectId/:boardId", userAuthentication, createNe
 router.post('/drag-drop-task', userAuthentication, dragAndDropTask)
 router.post("/edit-task", userAuthentication, editTask)
 router.get('/get-board-names', userAuthentication, getBoardNames)
-router.post("/change-board",userAuthentication,changeBoard)
-router.post("/add-comment",userAuthentication,addComment)
+router.post("/change-board", userAuthentication, changeBoard)
+router.post("/add-comment", userAuthentication, addComment)
 router.get("/delete-board/:boardName/:taskId", userAuthentication, deleteTask)
+router.get("/delete-comment/:boardName/:taskId/:commentId", userAuthentication, deleteComment)
+router.post("/change-time-spend",userAuthentication,changeTimeSpend)
 
 
 module.exports = router

@@ -34,6 +34,14 @@ const boardData = new mongoose.Schema({
                 type: Number,
                 required: true,
             },
+            workHours: {
+                type: Number,
+                required: true
+            },
+            timeSpend: {
+                type: Number,
+                default: 0
+            },
             comments: [
                 {
                     userId: {
