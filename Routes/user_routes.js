@@ -1,6 +1,7 @@
 const { createBoard, getBoardData, deleteBoard, createNewTask, dragAndDropTask, editTask, getBoardNames, changeBoard, addComment, deleteTask, deleteComment, changeTimeSpend } = require("../Controllers/board-controller")
 const { createCategory, getCategoryData, deleteCategory, editCategory } = require("../Controllers/category-controller")
 const { emailVerification } = require("../Controllers/email-verification")
+const { createEvent, getEvent } = require("../Controllers/event-controller")
 const { getMemberAndCategory, createProject, getAllProjects, deleteProject, getEditProjectDetails, editProject, getMembers, setProjectAccessMember, getAcessMemberList, removeAccess } = require("../Controllers/project-controller")
 const { sendInviteMail, getAllPeople, createTeam, getTeam, removePeople, getSingleTeamData, removeTeamMember, addTeamMember, deleteTeam } = require("../Controllers/team-controller")
 const { userRegisteration, userLogin, forgotPasswordSendMail, forgotPasswordUrlVerify, forgotPasswordChangePassword, signupWithGoogle, loginWithGoogle, isUserAuth } = require("../Controllers/user_controller")
@@ -62,5 +63,8 @@ router.get("/delete-board/:boardName/:taskId", userAuthentication, deleteTask)
 router.get("/delete-comment/:boardName/:taskId/:commentId", userAuthentication, deleteComment)
 router.post("/change-time-spend",userAuthentication,changeTimeSpend)
 
+// API RELATED TO EVENT
+router.post("/create-event",userAuthentication,createEvent)
+router.get("/get-events/:userId",userAuthentication,getEvent)
 
 module.exports = router
