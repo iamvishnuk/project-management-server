@@ -16,6 +16,9 @@ const userData = new mongoose.Schema({
     image: {
         type: String
     },
+    publicId: {
+        type: String
+    },
     your_job_title: {
         type: String
     },

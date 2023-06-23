@@ -4,9 +4,10 @@ const { emailVerification } = require("../Controllers/email-verification")
 const { createEvent, getEvent } = require("../Controllers/event-controller")
 const { getMemberAndCategory, createProject, getAllProjects, deleteProject, getEditProjectDetails, editProject, getMembers, setProjectAccessMember, getAcessMemberList, removeAccess } = require("../Controllers/project-controller")
 const { sendInviteMail, getAllPeople, createTeam, getTeam, removePeople, getSingleTeamData, removeTeamMember, addTeamMember, deleteTeam } = require("../Controllers/team-controller")
-const { userRegisteration, userLogin, forgotPasswordSendMail, forgotPasswordUrlVerify, forgotPasswordChangePassword, signupWithGoogle, loginWithGoogle, isUserAuth } = require("../Controllers/user_controller")
+const { userRegisteration, userLogin, forgotPasswordSendMail, forgotPasswordUrlVerify, forgotPasswordChangePassword, signupWithGoogle, loginWithGoogle, isUserAuth, getUserDetails, editUserDetails, uploadImage } = require("../Controllers/user_controller")
 const { userAuthentication } = require("../Middlewares/userAuth")
 const router = require("express").Router()
+const upload = require("../Middlewares/multer")
 
 
 // USER ROUTES
@@ -19,6 +20,9 @@ router.post("/change-password/:id", forgotPasswordChangePassword)
 router.post("/google-signup", signupWithGoogle)
 router.post("/google-login", loginWithGoogle)
 router.get("/is-auth-user", userAuthentication, isUserAuth)
+router.get("/get-user-details/:userId",userAuthentication,getUserDetails)
+router.post("/edite-user-details",userAuthentication,editUserDetails)
+router.post("/image-upload",upload.single("image"),userAuthentication,uploadImage)
 
 // PROJECT CATEGORY MANAGEMENT
 router.post("/create-category", userAuthentication, createCategory)

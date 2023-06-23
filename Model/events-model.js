@@ -29,7 +29,7 @@ const eventDate = new mongoose.Schema({
 const Event = mongoose.model("event", eventDate);
 
 // Schedule a job to delete expired events
-const deleteExpiredEvents = schedule.scheduleJob("0 0 * * *", async () => {
+const deleteExpiredEvents = schedule.scheduleJob("0 11 * * *", async () => {
     try {
         // Find events where the end date/time is in the past
         const expiredEvents = await Event.find({

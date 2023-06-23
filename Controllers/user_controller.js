@@ -5,6 +5,7 @@ const sendMail = require("../utils/sendEmail")
 const crypto = require("crypto")
 const jwt = require("jsonwebtoken")
 require("dotenv").config()
+const { uploadToCloudinary, removeFromCloudinary } = require("../utils/cloudinary")
 
 
 const userRegisteration = async (req, res) => {
@@ -32,7 +33,6 @@ const userRegisteration = async (req, res) => {
             res.status(200).json({ userId: userDetails._id, created: true, message: "A verification like send to email" })
         }
     } catch (error) {
-        console.error(error.message)
         res.status(500).json({ error: error.message, created: false });
     }
 }
@@ -56,7 +56,6 @@ const userLogin = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error.message)
         res.status(500).json({ error: error.message })
     }
 }
@@ -76,7 +75,7 @@ const forgotPasswordSendMail = async (req, res) => {
         await sendMail(email, "Change password link", url)
         res.status(200).json({ status: true, message: "Verification mail send Successfully" })
     } catch (error) {
-        console.log(error)
+        res.status(500).json({ message: "Internal server error" })
     }
 }
 
@@ -90,7 +89,7 @@ const forgotPasswordUrlVerify = async (req, res) => {
         res.status(200).json({ auth: true, message: "Valid url" })
 
     } catch (error) {
-        console.log(error.message)
+        res.status(500).json({ message: "Internal server error" })
     }
 }
 
@@ -116,7 +115,6 @@ const forgotPasswordChangePassword = async (req, res) => {
             res.status(404).json({ message: "User not found" })
         }
     } catch (error) {
-        console.log(error)
         res.status(500).json({ message: "Internal server error" })
     }
 }
@@ -137,7 +135,7 @@ const signupWithGoogle = async (req, res) => {
         const token = jwt.sign({ userId }, process.env.JWT_SECRET_KEY, { expiresIn: 300000 })
         return res.status(200).json({ logedIn: true, token: token, userId: user._id, message: "Successfully Loged In" })
     } catch (error) {
-        console.log(error)
+        res.status(500).json({ message: "Internal server error" })
     }
 }
 
@@ -150,23 +148,76 @@ const loginWithGoogle = async (req, res) => {
             const token = jwt.sign({ userId }, process.env.JWT_SECRET_KEY, { expiresIn: 300000 })
             res.status(200).json({ logedIn: true, token: token, userId: userId, message: "Successfully Loged In" })
         } else {
-            res.status(404).json({logedIn: false, message: "User not found"})
+            res.status(404).json({ logedIn: false, message: "User not found" })
         }
     } catch (error) {
-        console.log(error)
+        res.status(500).json({ message: "Internal server error" })
     }
 }
 
 const isUserAuth = async (req, res) => {
     try {
-        const user = await Users.findOne({_id: req.userId})
-        if(user !== null) {
-            res.status(200).json({auth: true, userDeatils: user})
+        const user = await Users.findOne({ _id: req.userId })
+        if (user !== null) {
+            res.status(200).json({ auth: true, userDeatils: user })
         } else {
-            res.status(404).json({auth: false})
+            res.status(404).json({ auth: false })
         }
     } catch (error) {
-        console.log(error)
+        res.status(500).json({ message: "Internal server error" })
+    }
+}
+
+const getUserDetails = async (req, res) => {
+    try {
+        const userId = req.params.userId
+        const userDetails = await Users.findOne({ _id: userId })
+        res.status(200).json({ userDetails })
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error" })
+    }
+}
+
+const editUserDetails = async (req, res) => {
+    try {
+        const { value, fieldName } = req.body
+        const userId = req.userId
+        const updateObject = { [`${fieldName}`]: value }
+
+        await Users.updateOne(
+            { _id: userId },
+            { $set: updateObject }
+        )
+        res.status(200).json({ updated: true })
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error" })
+    }
+}
+
+const uploadImage = async (req, res) => {
+    try {
+        const userId = req.userId
+        const userData = await Users.findOne({_id: userId})
+        // if the user already having the profile picture then remove and upload the new image
+        if(userData.publicId) {
+            const publicId = userData.publicId
+            await removeFromCloudinary(publicId)
+        }
+        //upload Image ot cloudinary
+        const data = await uploadToCloudinary(req.file.path, "user-images")
+        // save Image Url and publicId to the database
+        await Users.updateOne(
+            { _id: userId },
+            {
+                $set: {
+                    image: data.url,
+                    publicId: data.public_id
+                }
+            }
+        )
+        res.status(200).json({ message: "User image uploaded successfully" })
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error" })
     }
 }
 
@@ -178,5 +229,8 @@ module.exports = {
     forgotPasswordChangePassword,
     signupWithGoogle,
     loginWithGoogle,
-    isUserAuth
+    isUserAuth,
+    getUserDetails,
+    editUserDetails,
+    uploadImage,
 }
