@@ -1,4 +1,4 @@
-const { createBoard, getBoardData, deleteBoard, createNewTask, dragAndDropTask, editTask, getBoardNames, changeBoard, addComment, deleteTask, deleteComment, changeTimeSpend } = require("../Controllers/board-controller")
+const { createBoard, getBoardData, deleteBoard, createNewTask, dragAndDropTask, editTask, getBoardNames, changeBoard, addComment, deleteTask, deleteComment, changeTimeSpend, getAssignedTask } = require("../Controllers/board-controller")
 const { createCategory, getCategoryData, deleteCategory, editCategory } = require("../Controllers/category-controller")
 const { emailVerification } = require("../Controllers/email-verification")
 const { createEvent, getEvent } = require("../Controllers/event-controller")
@@ -20,9 +20,9 @@ router.post("/change-password/:id", forgotPasswordChangePassword)
 router.post("/google-signup", signupWithGoogle)
 router.post("/google-login", loginWithGoogle)
 router.get("/is-auth-user", userAuthentication, isUserAuth)
-router.get("/get-user-details/:userId",userAuthentication,getUserDetails)
-router.post("/edite-user-details",userAuthentication,editUserDetails)
-router.post("/image-upload",upload.single("image"),userAuthentication,uploadImage)
+router.get("/get-user-details/:userId", userAuthentication, getUserDetails)
+router.post("/edite-user-details", userAuthentication, editUserDetails)
+router.post("/image-upload", upload.single("image"), userAuthentication, uploadImage)
 
 // PROJECT CATEGORY MANAGEMENT
 router.post("/create-category", userAuthentication, createCategory)
@@ -65,10 +65,11 @@ router.post("/change-board", userAuthentication, changeBoard)
 router.post("/add-comment", userAuthentication, addComment)
 router.get("/delete-board/:boardName/:taskId", userAuthentication, deleteTask)
 router.get("/delete-comment/:boardName/:taskId/:commentId", userAuthentication, deleteComment)
-router.post("/change-time-spend",userAuthentication,changeTimeSpend)
+router.post("/change-time-spend", userAuthentication, changeTimeSpend)
+router.get("/get-assigned-task/:projectId", userAuthentication, getAssignedTask)
 
 // API RELATED TO EVENT
-router.post("/create-event",userAuthentication,createEvent)
-router.get("/get-events/:userId",userAuthentication,getEvent)
+router.post("/create-event", userAuthentication, createEvent)
+router.get("/get-events/:userId", userAuthentication, getEvent)
 
 module.exports = router

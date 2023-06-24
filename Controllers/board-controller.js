@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose")
 const Board = require("../Model/board-model")
 
 const createBoard = async (req, res) => {
@@ -82,19 +83,24 @@ const createNewTask = async (req, res) => {
 
 const dragAndDropTask = async (req, res) => {
     try {
-        const { destination, source } = req.body
-
-        const sourceBoard = await Board.findOne({ boardName: source.droppableId })
+        const { destination, source, projectId } = req.body
+        const userId = req.userId
+        
+        const sourceBoard = await Board.findOne({ projectId: projectId, boardName: source.droppableId })
         const sourceObject = sourceBoard.task.find(task => task.taskId === source.index)
+        if (sourceObject && sourceObject.assignee === undefined) {
+            sourceObject.assignee = userId;
+        }
+
         await Board.updateOne(
-            { boardName: destination.droppableId },
+            { boardName: destination.droppableId, projectId: projectId },
             {
                 $push: { task: sourceObject }
             }
         )
 
         await Board.updateOne(
-            { boardName: source.droppableId },
+            { boardName: source.droppableId, projectId: projectId },
             { $pull: { task: { taskId: source.index } } }
         );
         res.status(200).json({ updated: true })
@@ -226,7 +232,6 @@ const deleteComment = async (req, res) => {
 
 const changeTimeSpend = async (req, res) => {
     try {
-        console.log(req.body)
         const { value, boardName, taskId, fieldName, workHours } = req.body
         if (Number(value) > workHours) {
             res.status(400).json({ message: "Time spend is greater than the work hour" })
@@ -252,6 +257,24 @@ const changeTimeSpend = async (req, res) => {
     }
 }
 
+const getAssignedTask = async (req, res) => {
+    try {
+        const userId = req.userId
+        const projectId = req.params.projectId
+
+        const data = await Board.find(
+            {
+                projectId: projectId,
+                "task.assignee": userId
+            }
+        ).populate("projectId")
+
+        res.status(200).json({assignedTask: data})
+    } catch (error) {
+        res.status(500).json({message: "Internal server error"})
+    }
+}
+
 
 module.exports = {
     createBoard,
@@ -266,5 +289,6 @@ module.exports = {
     addComment,
     deleteTask,
     deleteComment,
-    changeTimeSpend
+    changeTimeSpend,
+    getAssignedTask,
 }
