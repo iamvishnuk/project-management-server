@@ -16,7 +16,7 @@ const emailVerification = async (req, res) => {
         res.status(200).json({ verified: true, message: "Email verified successfully" })
 
     } catch (error) {
-        console.log(error.message)
+        res.status(500).json({ message: "Internal server error" })
     }
 }
 

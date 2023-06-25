@@ -10,14 +10,12 @@ const getMemberAndCategory = async (req, res) => {
         const memberDetails = await Users.findOne({ _id: userId }).populate("member")
         res.status(200).json({ categoryDetails: categoryDetails, memberDetails: memberDetails.member })
     } catch (error) {
-        console.log(error)
         res.status(500).json({ messgae: "Internal server error" })
     }
 }
 
 const createProject = async (req, res) => {
     try {
-        console.log(req.body)
         const { projectName, projectCategory, projectUrl, projectLead, description } = req.body
         const userId = req.userId
         if (projectName === "" || projectCategory === "" || projectUrl === "" || projectLead === "" || description === "") {
@@ -35,7 +33,6 @@ const createProject = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error)
         res.status(500).json({ message: "Interanl server error" })
     }
 }
@@ -46,7 +43,6 @@ const getAllProjects = async (req, res) => {
         const projects = await Project.find({ $or: [{ createdBy: userId }, { projectLead: userId }, { members: { $in: [userId] } }] }).populate("projectLead").populate("projectCategory")
         res.status(200).json({ projectDetails: projects })
     } catch (error) {
-        console.log(error.message)
         res.status(500).json({ message: "Interanl server error" })
     }
 }
@@ -57,7 +53,6 @@ const deleteProject = async (req, res) => {
         await Project.deleteOne({ _id: id })
         res.status(200).json({ message: "Project as successfully deleted" })
     } catch (error) {
-        console.log(error.message)
         res.status(500).json({ message: "Interanl server error" })
     }
 }
@@ -68,7 +63,6 @@ const getEditProjectDetails = async (req, res) => {
         const projectData = await Project.findOne({ _id: id }).populate("projectCategory").populate("projectLead")
         res.status(200).json({ projectData: projectData })
     } catch (error) {
-        console.log(error)
         res.status(500).json({ message: "Internal server error" })
     }
 }
@@ -98,7 +92,6 @@ const editProject = async (req, res) => {
         res.status(200).json({ message: "successfully update the project details" })
 
     } catch (error) {
-        console.log(error)
         res.status(500).json({ message: "Internal server error" })
     }
 }
@@ -109,7 +102,6 @@ const getMembers = async (req, res) => {
         const data = await Users.findOne({ _id: userId }).populate("member")
         res.status(200).json({ data: data.member })
     } catch (error) {
-        console.log(error.message)
         res.status(500).json({ message: "Interanl server error" })
     }
 }
@@ -125,7 +117,6 @@ const setProjectAccessMember = async (req, res) => {
         res.status(200).json({ message: "New members added successfully" })
 
     } catch (error) {
-        console.log(error.message)
         res.status(500).json({ message: "Interanl server error" })
     }
 }
@@ -136,7 +127,6 @@ const getAcessMemberList = async (req, res) => {
         const data = await Project.findOne({ _id: projectId }).populate("members")
         res.status(200).json({ accessMemberList: data.members })
     } catch (error) {
-        console.log(error)
         res.status(500).json({ message: "Interanl server error" })
     }
 }
@@ -148,7 +138,6 @@ const removeAccess = async (req, res) => {
         await Project.updateOne({ _id: projectId }, { $pull: { members: memberId } })
         res.status(200).json({ message: "Removed project access" })
     } catch (error) {
-        console.log(error.message)
         res.status(500).json({ message: "Interanl server error" })
     }
 }

@@ -18,9 +18,7 @@ module.exports = async (email, subject, text) => {
             subject: subject,
             text: text
         })
-        console.log(info.messageId)
     } catch (error) {
-        console.log("something went wrong")
-        console.log(error)
+        res.status(500).json({ message: "Internal server error" })
     }
 }

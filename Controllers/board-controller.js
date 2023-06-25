@@ -14,7 +14,6 @@ const createBoard = async (req, res) => {
             res.status(201).json({ message: "New board created" })
         }
     } catch (error) {
-        console.log(error.message)
         res.status(500).json({ message: "Internal server error" })
     }
 }
@@ -30,7 +29,6 @@ const getBoardData = async (req, res) => {
             .populate('task.assignee');
         res.status(200).json({ boardData: boardData })
     } catch (error) {
-        console.log(error.message)
         res.status(500).json({ message: "Internal server error" })
     }
 }
@@ -41,7 +39,6 @@ const deleteBoard = async (req, res) => {
         await Board.deleteOne({ _id: boardId })
         res.status(200).json({ message: "Board deleted successfully" })
     } catch (error) {
-        console.log(error.message)
         res.status(500).json({ message: "Internal server error" })
     }
 }
@@ -76,7 +73,6 @@ const createNewTask = async (req, res) => {
             res.status(201).json({ message: "New task added" })
         }
     } catch (error) {
-        console.log(error.message)
         res.status(500).json({ message: "Internal server error" })
     }
 }
@@ -105,7 +101,6 @@ const dragAndDropTask = async (req, res) => {
         );
         res.status(200).json({ updated: true })
     } catch (error) {
-        console.log(error)
         res.status(500).json({ message: "Internal server error" })
     }
 }
@@ -127,7 +122,6 @@ const editTask = async (req, res) => {
         )
         res.status(200).json({ updated: true })
     } catch (error) {
-        console.log(error.message)
         res.status(500).json({ message: "Internal server error" })
     }
 }
@@ -138,7 +132,6 @@ const getBoardNames = async (req, res) => {
         const result = boardNames.map(board => board.boardName)
         res.status(200).json({ boardNames: result, message: "res send" })
     } catch (error) {
-        console.log(error.message)
         res.status(500).json({ message: "Internal server error" })
     }
 }
@@ -160,7 +153,6 @@ const changeBoard = async (req, res) => {
         );
         res.status(200).json({ updated: true })
     } catch (error) {
-        console.log(error.message)
         res.status(500).json({ message: "Internal server error" })
     }
 }
@@ -186,7 +178,6 @@ const addComment = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error.message)
         res.status(500).json({ message: "Internal server error" })
     }
 }
@@ -200,7 +191,6 @@ const deleteTask = async (req, res) => {
         );
         res.status(200).json({ deleted: true })
     } catch (error) {
-        console.log(error.message)
         res.status(500).json({ message: "Internal server error" })
     }
 }
@@ -225,7 +215,6 @@ const deleteComment = async (req, res) => {
         res.status(200).json({ deleted: true })
 
     } catch (error) {
-        console.log(error.message)
         res.status(500).json({ message: "Internal server error" })
     }
 }
@@ -239,7 +228,6 @@ const changeTimeSpend = async (req, res) => {
             const updateObject = {
                 [`task.$.${fieldName}`]: value.value || value
             };
-            console.log(Number(value))
             await Board.updateOne(
                 {
                     boardName,
@@ -252,7 +240,6 @@ const changeTimeSpend = async (req, res) => {
             res.status(200).json({ updated: true })
         }
     } catch (error) {
-        console.log(error.message)
         res.status(500).json({ message: "Internal server error" })
     }
 }

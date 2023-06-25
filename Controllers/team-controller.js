@@ -18,7 +18,6 @@ const sendInviteMail = async (req, res) => {
             res.status(404).json({ add: false, message: "There is not such user exist" })
         }
     } catch (error) {
-        console.log(error.message)
         res.status(500).json({ status: false, message: "Internal server error" })
     }
 }
@@ -33,7 +32,6 @@ const getAllPeople = async (req, res) => {
             res.status(404).json({ peopleData: false })
         }
     } catch (error) {
-        console.log(error)
         res.status(500).json({ message: "Internanl server error" })
     }
 }
@@ -45,15 +43,13 @@ const createTeam = async (req, res) => {
         const membersId = member.map(data => {
             return data.value
         })
-        console.log(membersId)
-        const newTeam = await new Team({
+        await new Team({
             teamName: teamName,
             members: membersId,
             admin: userId
         }).save()
         res.status(201).json({ message: "New team created Successfully" })
     } catch (error) {
-        console.log(error)
         res.status(500).json({ message: "Interanle server error" })
     }
 }
@@ -64,7 +60,6 @@ const getTeam = async (req, res) => {
         const teamData = await Team.find({ $or: [{ admin: userId }, { members: { $in: [userId] } }] })
         res.status(200).json({ teamData: teamData })
     } catch (error) {
-        console.log(error)
         res.status(500).json({ message: "Interanl server error" })
     }
 }
@@ -76,19 +71,16 @@ const removePeople = async (req, res) => {
         await Users.updateOne({ _id: userId }, { $pull: { member: peopleId } })
         res.status(200).json({ message: "Removed successfully" })
     } catch (error) {
-        console.log(error.message)
         res.status(500).json({ message: "Internal server error" })
     }
 }
 
 const getSingleTeamData = async (req, res) => {
     try {
-        console.log("function called ")
         const teamId = req.params.id
         const team = await Team.findOne({ _id: teamId }).populate("members")
         res.status(200).json({ team })
     } catch (error) {
-        console.log(error.message)
         res.status(500).json({ message: "Interanl server error" })
     }
 }
@@ -100,7 +92,6 @@ const removeTeamMember = async (req, res) => {
         await Team.updateOne({ _id: teamId }, { $pull: { members: memberid } })
         res.status(200).json({ message: "Removed one memeber" })
     } catch (error) {
-        console.log(error.message)
         res.status(500).json({ message: "Interanl server error" })
     }
 }
@@ -115,7 +106,6 @@ const addTeamMember = async (req, res) => {
         await Team.updateOne({ _id: teamId }, { $addToSet: { members: membersId } })
         res.status(200).json({ message: "New members added" })
     } catch (error) {
-        console.log(error.message)
         res.status(500).json({ message: "Interanl server error" })
     }
 }
@@ -126,7 +116,6 @@ const deleteTeam = async (req, res) => {
         await Team.deleteOne({ _id: teamId })
         res.status(200).json({ message: "Team delete successfully" })
     } catch (error) {
-        console.log(error.message)
         res.status(500).json({ message: "Internal server error" })
     }
 }

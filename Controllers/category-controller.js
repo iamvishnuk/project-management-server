@@ -18,7 +18,7 @@ const createCategory = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error)
+        res.status(500).json({ message: "Internal server error" })
     }
 }
 
@@ -29,7 +29,7 @@ const getCategoryData = async (req, res) => {
         res.status(200).json({ data: categoryData })
 
     } catch (error) {
-        console.log(error)
+        res.status(500).json({ message: "Internal server error" })
     }
 }
 
@@ -41,7 +41,7 @@ const deleteCategory = async (req, res) => {
             res.status(200).json({ delete: true, message: "successfully delete the category" })
         }
     } catch (error) {
-        console.log(error)
+        res.status(500).json({ message: "Internal server error" })
     }
 }
 
@@ -62,7 +62,7 @@ const editCategory = async (req, res) => {
             }).then(() => res.status(200).json({ update: true, message: "successfully update the category" }))
         }
     } catch (error) {
-        console.log(error)
+        res.status(500).json({ message: "Internal server error" })
     }
 }
 
