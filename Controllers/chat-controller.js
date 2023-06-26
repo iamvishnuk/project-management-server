@@ -1,4 +1,4 @@
-const Team = require("../Model/team-model")
+const Chat = require("../Model/chat-model")
 
 
 module.exports.addChat = async (req, res) => {
@@ -7,18 +7,13 @@ module.exports.addChat = async (req, res) => {
         const { message, teamId } = req.body
         const userId = req.userId
         const messageObj = {
-            text: message,
-            from: userId
+            message: message,
+            from: userId,
+            team: teamId
         }
-        await Team.updateOne(
-            { _id: teamId },
-            {
-                $push: {
-                    message: messageObj
-                }
-            }
-        )
-        res.status(200).json({ message: "message added successfully" })
+        let data = await Chat.create(messageObj)
+        data = await data.populate("from")
+        res.status(200).json({ data, message: "message added successfully" })
     } catch (error) {
         res.status(500).json({ message: "Internal server error" })
     }
@@ -27,8 +22,8 @@ module.exports.addChat = async (req, res) => {
 module.exports.getAllMessage = async (req, res) => {
     try {
         const teamId = req.params.teamId
-        const data = await Team.findOne({ _id: teamId }).populate("message.from")
-        res.status(200).json({ message: data.message })
+        const data = await Chat.find({ team: teamId }).populate("from")
+        res.status(200).json({ message: data })
     } catch (error) {
         res.status(500).json({ message: "Internal server error" })
     }

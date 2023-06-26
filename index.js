@@ -21,8 +21,11 @@ const io = new Server(httpServer, {
 })
 
 io.on("connection", (socket) => {
-    socket.on("send-message",() => {
-        io.emit("receved-msg")
+    socket.on("join-room",room => {
+        socket.join(room)
+    })
+    socket.on("send-message",(message) => {
+        io.to(message.team).emit("receved-msg",message)
     })
 })
 

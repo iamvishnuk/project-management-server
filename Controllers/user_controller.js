@@ -49,7 +49,7 @@ const userLogin = async (req, res) => {
                 const userId = user._id
                 const token = jwt.sign({ userId }, process.env.JWT_SECRET_KEY, { expiresIn: 300000 })
 
-                return res.status(200).json({ logedIn: true, token: token, userId: user._id, message: "Successfully Loged In" })
+                return res.status(200).json({ logedIn: true, token: token, userId: user._id, userName: user.userName, message: "Successfully Loged In" })
             } else {
                 return res.status(404).send({ logedIn: false, message: "Wrong password" })
             }
@@ -133,7 +133,7 @@ const signupWithGoogle = async (req, res) => {
         }).save()
         const userId = user._id
         const token = jwt.sign({ userId }, process.env.JWT_SECRET_KEY, { expiresIn: 300000 })
-        return res.status(200).json({ logedIn: true, token: token, userId: user._id, message: "Successfully Loged In" })
+        return res.status(200).json({ logedIn: true, token: token, userId: user._id, userName: user.userName, message: "Successfully Loged In" })
     } catch (error) {
         res.status(500).json({ message: "Internal server error" })
     }
@@ -146,7 +146,7 @@ const loginWithGoogle = async (req, res) => {
         if (user !== null) {
             const userId = user._id
             const token = jwt.sign({ userId }, process.env.JWT_SECRET_KEY, { expiresIn: 300000 })
-            res.status(200).json({ logedIn: true, token: token, userId: userId, message: "Successfully Loged In" })
+            res.status(200).json({ logedIn: true, token: token, userId: userId, userName: user.userName, message: "Successfully Loged In" })
         } else {
             res.status(404).json({ logedIn: false, message: "User not found" })
         }

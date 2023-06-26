@@ -13,16 +13,6 @@ const teamData = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "user"
     },
-    message: [{
-        text: {
-            type: String,
-            required: true
-        },
-        from: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "user"
-        }
-    }]
 })
 
 module.exports = mongoose.model("team", teamData)
