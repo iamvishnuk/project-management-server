@@ -8,7 +8,7 @@ const { userRegisteration, userLogin, forgotPasswordSendMail, forgotPasswordUrlV
 const { userAuthentication } = require("../Middlewares/userAuth")
 const router = require("express").Router()
 const upload = require("../Middlewares/multer")
-const { addChat, getAllMessage } = require("../Controllers/chat-controller")
+const { addChat, getAllMessage, sendImgaeMessage } = require("../Controllers/chat-controller")
 
 
 // USER ROUTES
@@ -76,5 +76,6 @@ router.get("/get-events/:userId", userAuthentication, getEvent)
 // API RELATED TO CHAT
 router.post("/add-chat", userAuthentication, addChat)
 router.get("/get-all-message/:teamId", userAuthentication, getAllMessage)
+router.post("/image-message/:teamId", upload.single("image"), userAuthentication, sendImgaeMessage)
 
 module.exports = router

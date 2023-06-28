@@ -12,7 +12,10 @@ const chatData = new mongoose.Schema({
     team: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "team"
-    }
+    },
+    publicId: {
+        type: String
+    },
 })
 
 module.exports = mongoose.model("chat", chatData)
