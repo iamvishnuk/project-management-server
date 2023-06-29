@@ -21,11 +21,34 @@ const io = new Server(httpServer, {
 })
 
 io.on("connection", (socket) => {
-    socket.on("join-room",room => {
+    // for chating
+    socket.on("join-room", room => {
         socket.join(room)
     })
-    socket.on("send-message",(message) => {
-        io.to(message.team).emit("receved-msg",message)
+    socket.on("send-message", (message) => {
+        io.to(message.team).emit("receved-msg", message)
+    })
+    // for video calling
+    socket.on("join-video-room", roomId => {
+        io.to(roomId).emit("user:joined", { id: socket.id })
+        socket.join(roomId)
+        io.to(socket.id).emit("video-room", roomId)
+    })
+
+    socket.on("user:call", ({ to, offer }) => {
+        io.to(to).emit("incomming:call", { from: socket.id, offer })
+    })
+
+    socket.on("call:accepted", ({ to, ans }) => {
+        io.to(to).emit("call:accepted", { from: socket.id, ans })
+    })
+
+    socket.on("peer:negotiationneeded",({to, offer}) => {
+        io.to(to).emit("peer:negotiationneeded",{from: socket.id, offer})
+    })
+
+    socket.on("peer:nego:done",({to, ans}) => {
+        io.to(to).emit("peer:nego:final",{from: socket.id, ans})
     })
 })
 
