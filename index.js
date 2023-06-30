@@ -28,7 +28,7 @@ io.on("connection", (socket) => {
     socket.on("send-message", (message) => {
         io.to(message.team).emit("receved-msg", message)
     })
-    // for video calling
+    // for video calling 1st
     socket.on("join-video-room", roomId => {
         io.to(roomId).emit("user:joined", { id: socket.id })
         socket.join(roomId)
@@ -49,6 +49,13 @@ io.on("connection", (socket) => {
 
     socket.on("peer:nego:done",({to, ans}) => {
         io.to(to).emit("peer:nego:final",{from: socket.id, ans})
+    })
+
+    // videCalling 2
+    socket.on("join:room",roomId => {
+        console.log(roomId)
+        socket.join(roomId)
+        socket.to(roomId).emit("new:user:joined")
     })
 })
 
