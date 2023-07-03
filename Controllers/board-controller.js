@@ -81,10 +81,10 @@ const dragAndDropTask = async (req, res) => {
     try {
         const { destination, source, projectId } = req.body
         const userId = req.userId
-        
+
         const sourceBoard = await Board.findOne({ projectId: projectId, boardName: source.droppableId })
         const sourceObject = sourceBoard.task.find(task => task.taskId === source.index)
-        if (sourceObject && sourceObject.assignee === undefined) {
+        if (sourceObject && sourceObject.assignee === null) {
             sourceObject.assignee = userId;
         }
 
@@ -256,9 +256,9 @@ const getAssignedTask = async (req, res) => {
             }
         ).populate("projectId")
 
-        res.status(200).json({assignedTask: data})
+        res.status(200).json({ assignedTask: data })
     } catch (error) {
-        res.status(500).json({message: "Internal server error"})
+        res.status(500).json({ message: "Internal server error" })
     }
 }
 

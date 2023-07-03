@@ -21,7 +21,6 @@ const io = new Server(httpServer, {
 })
 
 io.on("connection", (socket) => {
-    console.log("socket is connection established")
     // for chating
     socket.on("join-room", room => {
         socket.join(room)
@@ -29,49 +28,52 @@ io.on("connection", (socket) => {
     socket.on("send-message", (message) => {
         io.to(message.team).emit("receved-msg", message)
     })
-    // for video calling 1st
-    socket.on("join-video-room", roomId => {
-        io.to(roomId).emit("user:joined", { id: socket.id })
-        socket.join(roomId)
-        io.to(socket.id).emit("video-room", roomId)
-    })
 
-    socket.on("user:call", ({ to, offer }) => {
-        io.to(to).emit("incomming:call", { from: socket.id, offer })
-    })
+    // VIDEO CALL 1 TO 1 ONLY   
+    // Triggered when a peer hits the join room button.
+    socket.on("join", (roomName) => {
+        const { rooms } = io.sockets.adapter
+        const room = rooms.get(roomName)
+        // room = undefined when so such room exists
+        if (room === undefined) {
+            socket.join(roomName)
+            socket.emit("created")
+        } else if (room.size === 1) {
+            // room.size === 1 when one person is inside teh room
+            socket.join(roomName);
+            socket.emit("joined")
+        } else {
+            // wheere there are already two people insider the room
+            socket.emit("full")
+        }
+    });
 
-    socket.on("call:accepted", ({ to, ans }) => {
-        io.to(to).emit("call:accepted", { from: socket.id, ans })
-    })
+    // Triggered when the person who joined the room is ready to communicate.
+    socket.on("ready", (roomName) => {
+        socket.broadcast.to(roomName).emit("ready") // Infrom the other peer in the room
+    });
 
-    socket.on("peer:negotiationneeded", ({ to, offer }) => {
-        io.to(to).emit("peer:negotiationneeded", { from: socket.id, offer })
-    })
+    // Triggered when server gets an icecandidate from a peer in the room.
+    socket.on("ice-candidate", (candidate, roomName) => {
+        socket.broadcast.to(roomName).emit("ice-candidate", candidate) // send the candidate to the other peer in the room
+    });
 
-    socket.on("peer:nego:done", ({ to, ans }) => {
-        io.to(to).emit("peer:nego:final", { from: socket.id, ans })
-    })
+    // Triggered when server gets an offer from a peer in the room.
+    socket.on("offer", (offer, roomName) => {
+        socket.broadcast.to(roomName).emit("offer", offer) // sends Offer to the other peer in the room
+    });
 
-    // videCalling 2
-    socket.on("join:room", roomId => {
-        console.log("join:room")
-        socket.to(roomId).emit("new:user:joined")
-    })
-    // send offer to callee
-    socket.on("send:offer", (offer, roomId) => {
-        console.log("send:offer")
-        socket.to(roomId).emit("receive:offer", offer)
-    })
-    // answer
-    socket.on("answer:created", (ans, roomId) => {
-        console.log("answer:created")
-        socket.to(roomId).emit("receive:answer", ans)
-    })
-    // on ice candidate
-    socket.on("ice:candidate", (iceCandidate, roomId) => {
-        console.log("ice: candidate")
-        socket.to(roomId).emit("receive:iceCandidate", iceCandidate)
-    })
+    // Triggered when server gets an answer from a peer in the room
+    socket.on("answer", (answer, roomName) => {
+        socket.broadcast.to(roomName).emit("answer", answer) // Send the answer to the other peer in the room.
+    });
+
+    // when the peer leave the room
+    socket.on("leave", (roomName) => {
+        socket.leave(roomName);
+        socket.broadcast.to(roomName).emit("leave")
+    });
+
 })
 
 app.use(express.json())
