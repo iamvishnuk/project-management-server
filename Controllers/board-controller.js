@@ -1,5 +1,5 @@
-const { default: mongoose } = require("mongoose")
 const Board = require("../Model/board-model")
+const projectsModel = require("../Model/projects-model")
 
 const createBoard = async (req, res) => {
     try {
@@ -244,18 +244,16 @@ const changeTimeSpend = async (req, res) => {
     }
 }
 
-const getAssignedTask = async (req, res) => {
+const assignedToMe = async (req, res) => {
     try {
         const userId = req.userId
-        const projectId = req.params.projectId
-
-        const data = await Board.find(
-            {
-                projectId: projectId,
+        const userProject = await projectsModel.find({ $or: [{ createdBy: userId }, { projectLead: userId }, { members: { $in: [userId] } }] })
+        const data = await Promise.all(userProject.map(async (item) => {
+            return await Board.find({
+                projectId: item._id,
                 "task.assignee": userId
-            }
-        ).populate("projectId")
-
+            }).populate("projectId");
+        }));
         res.status(200).json({ assignedTask: data })
     } catch (error) {
         res.status(500).json({ message: "Internal server error" })
@@ -277,5 +275,5 @@ module.exports = {
     deleteTask,
     deleteComment,
     changeTimeSpend,
-    getAssignedTask,
+    assignedToMe
 }
