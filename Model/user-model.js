@@ -36,6 +36,24 @@ const userData = new mongoose.Schema({
     member: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "user"
+    }],
+    notification: [{
+        title: {
+            type: String,
+            required: true
+        },
+        message: {
+            type: String,
+            required: true
+        },
+        date: {
+            type: Date,
+            default: Date.now()
+        },
+        readed: {
+            type: Boolean,
+            default: false
+        }
     }]
 })
 

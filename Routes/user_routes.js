@@ -4,7 +4,7 @@ const { emailVerification } = require("../Controllers/email-verification")
 const { createEvent, getEvent } = require("../Controllers/event-controller")
 const { getMemberAndCategory, createProject, getAllProjects, deleteProject, getEditProjectDetails, editProject, getMembers, setProjectAccessMember, getAcessMemberList, removeAccess } = require("../Controllers/project-controller")
 const { sendInviteMail, getAllPeople, createTeam, getTeam, removePeople, getSingleTeamData, removeTeamMember, addTeamMember, deleteTeam } = require("../Controllers/team-controller")
-const { userRegisteration, userLogin, forgotPasswordSendMail, forgotPasswordUrlVerify, forgotPasswordChangePassword, signupWithGoogle, loginWithGoogle, isUserAuth, getUserDetails, editUserDetails, uploadImage } = require("../Controllers/user_controller")
+const { userRegisteration, userLogin, forgotPasswordSendMail, forgotPasswordUrlVerify, forgotPasswordChangePassword, signupWithGoogle, loginWithGoogle, isUserAuth, getUserDetails, editUserDetails, uploadImage, getAllNotification } = require("../Controllers/user_controller")
 const { userAuthentication } = require("../Middlewares/userAuth")
 const router = require("express").Router()
 const upload = require("../Middlewares/multer")
@@ -77,5 +77,8 @@ router.get("/get-events/:userId", userAuthentication, getEvent)
 router.post("/add-chat", userAuthentication, addChat)
 router.get("/get-all-message/:teamId", userAuthentication, getAllMessage)
 router.post("/image-message/:teamId", upload.single("image"), userAuthentication, sendImgaeMessage)
+
+// API RELATED TO NOTIFICATION  
+router.get("/get-all-notification",userAuthentication,getAllNotification)
 
 module.exports = router

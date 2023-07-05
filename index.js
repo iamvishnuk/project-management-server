@@ -20,7 +20,26 @@ const io = new Server(httpServer, {
     }
 })
 
+const onlineUsers = new Map()
+
 io.on("connection", (socket) => {
+    console.log(`socket connected ${socket.id}`)
+
+    // FOR SENDING THE NOTIFICATION
+    socket.on("active:user", (userId) => {
+        console.log("active: user",userId)
+        onlineUsers.set(userId, socket.id);
+        console.log(onlineUsers)
+    })
+
+    socket.on("create:project", userId => {
+        console.log(userId)
+        const sender = onlineUsers.get(userId)
+        console.log(sender)
+        socket.broadcast.to(sender).emit("notification")
+    })  
+
+
     // for chating
     socket.on("join-room", room => {
         socket.join(room)

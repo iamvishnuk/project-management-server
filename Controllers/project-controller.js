@@ -1,6 +1,7 @@
 const Category = require("../Model/category-model")
 const Users = require("../Model/user-model")
 const Project = require("../Model/projects-model")
+const sendNotification = require("../utils/sendNotification")
 
 // getting members adn category data for creating project
 const getMemberAndCategory = async (req, res) => {
@@ -29,7 +30,8 @@ const createProject = async (req, res) => {
                 description: description,
                 createdBy: userId
             }).save()
-            res.status(201).json({ message: "New project created successfully" })
+            sendNotification("New Project", `Your are added as a Project Lead in ${projectName} `, projectLead)
+            res.status(201).json({ message: "New project created successfully", projectLead })
         }
 
     } catch (error) {

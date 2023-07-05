@@ -197,9 +197,9 @@ const editUserDetails = async (req, res) => {
 const uploadImage = async (req, res) => {
     try {
         const userId = req.userId
-        const userData = await Users.findOne({_id: userId})
+        const userData = await Users.findOne({ _id: userId })
         // if the user already having the profile picture then remove and upload the new image
-        if(userData.publicId) {
+        if (userData.publicId) {
             const publicId = userData.publicId
             await removeFromCloudinary(publicId)
         }
@@ -221,6 +221,16 @@ const uploadImage = async (req, res) => {
     }
 }
 
+const getAllNotification = async (req, res) => {
+    try {
+        const userId = req.userId
+        const data = await Users.findOne({ _id: userId },)
+        res.status(200).json({ notifications: data.notification })
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error" })
+    }
+}
+
 module.exports = {
     userRegisteration,
     userLogin,
@@ -233,4 +243,5 @@ module.exports = {
     getUserDetails,
     editUserDetails,
     uploadImage,
+    getAllNotification
 }
