@@ -28,7 +28,7 @@ router.post("/image-upload", upload.single("image"), userAuthentication, uploadI
 // PROJECT CATEGORY MANAGEMENT
 router.post("/create-category", userAuthentication, createCategory)
 router.get("/get-category-data", userAuthentication, getCategoryData)
-router.get("/delete-category/:deleteCategoryId", userAuthentication, deleteCategory)
+router.delete("/delete-category/:deleteCategoryId", userAuthentication, deleteCategory)
 router.post("/edit-category", userAuthentication, editCategory)
 
 // TEAM MANAGEMENT ROUTES
@@ -40,13 +40,13 @@ router.get("/remove-people/:id", userAuthentication, removePeople)
 router.get("/get-single-team/:id", userAuthentication, getSingleTeamData)
 router.get("/remove-team-member/:teamId/:memberid", userAuthentication, removeTeamMember)
 router.post("/add-team-memeber/:teamId", userAuthentication, addTeamMember)
-router.get("/delete-team/:teamId", userAuthentication, deleteTeam)
+router.delete("/delete-team/:teamId", userAuthentication, deleteTeam)
 
 // PROJECT MANAGEMENT ROUTES
 router.get("/get-member-and-category", userAuthentication, getMemberAndCategory)
 router.post("/create-project", userAuthentication, createProject)
 router.get("/get-all-project", userAuthentication, getAllProjects)
-router.get('/delete-project/:id', userAuthentication, deleteProject)
+router.delete('/delete-project/:id', userAuthentication, deleteProject)
 router.get("/get-edit-project-details/:id", userAuthentication, getEditProjectDetails)
 router.post("/edit-project", userAuthentication, editProject)
 router.get("/get-member", userAuthentication, getMembers)
@@ -57,7 +57,7 @@ router.get("/remove-access/:memberId/:projectId", userAuthentication, removeAcce
 // API RELATED TO BOARD
 router.post("/create-board", userAuthentication, createBoard)
 router.get("/get-board-data/:projectId", userAuthentication, getBoardData)
-router.get("/delete-board/:boardId", userAuthentication, deleteBoard)
+router.delete("/delete-board/:boardId", userAuthentication, deleteBoard)
 router.post("/create-new-task/:projectId/:boardId", userAuthentication, createNewTask)
 router.post('/drag-drop-task', userAuthentication, dragAndDropTask)
 router.post("/edit-task", userAuthentication, editTask)

@@ -9,7 +9,7 @@ const { Server } = require("socket.io")
 
 app.use(cors({
     origin: ["http://localhost:5173"],
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "DELETE"],
     credentials: true
 }))
 
@@ -23,19 +23,14 @@ const io = new Server(httpServer, {
 const onlineUsers = new Map()
 
 io.on("connection", (socket) => {
-    console.log(`socket connected ${socket.id}`)
 
     // FOR SENDING THE NOTIFICATION
     socket.on("active:user", (userId) => {
-        console.log("active: user",userId)
         onlineUsers.set(userId, socket.id);
-        console.log(onlineUsers)
     })
 
     socket.on("create:project", userId => {
-        console.log(userId)
         const sender = onlineUsers.get(userId)
-        console.log(sender)
         socket.broadcast.to(sender).emit("notification")
     })  
 

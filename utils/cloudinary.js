@@ -12,7 +12,7 @@ uploadToCloudinary = (path, folder) => {
         .then((data) => {
             return { url: data.url, public_id: data.public_id }
         })
-        .catch((error) => console.log(error))
+        .catch((error) => {})
 }
 
 removeFromCloudinary = async (public_id) => {

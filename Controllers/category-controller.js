@@ -4,7 +4,8 @@ const createCategory = async (req, res) => {
     try {
 
         const { categoryName, categoryDescription } = req.body
-        const found = await Category.findOne({ categoryName: categoryName })
+        const regex = new RegExp(categoryName, "i")
+        const found = await Category.findOne({ categoryName: regex })
         if (found) {
             res.status(422).json({ message: "category name already exist" })
         } else {
