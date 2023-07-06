@@ -28,7 +28,7 @@ const userRegisteration = async (req, res) => {
                 token: crypto.randomBytes(32).toString("hex")
             }).save()
 
-            const url = `http://localhost:5173/user/${userDetails._id}/verify/${token.token}`
+            const url = `https://keen-mermaid-00ab86.netlify.app/${userDetails._id}/verify/${token.token}`
             await sendMail(email, "Verfity Email", url)
             res.status(200).json({ userId: userDetails._id, created: true, message: "A verification like send to email" })
         }
