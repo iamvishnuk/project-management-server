@@ -6,16 +6,17 @@ const userRoutes = require("./Routes/user_routes")
 const app = express()
 const httpServer = createServer(app);
 const { Server } = require("socket.io")
+require("dotenv").config()
 
 app.use(cors({
-    origin: ["http://localhost:5173"],
+    origin: [process.env.FRONT_END_URL],
     methods: ["GET", "POST", "DELETE"],
     credentials: true
 }))
 
 const io = new Server(httpServer, {
     cors: {
-        origin: ["http://localhost:5173"],
+        origin: [process.env.FRONT_END_URL],
         credentials: true
     }
 })
