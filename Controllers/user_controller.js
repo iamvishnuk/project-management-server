@@ -44,14 +44,30 @@ const userLogin = async (req, res) => {
         if (user === null) {
             return res.status(404).json({ logedIn: false, message: "Invalid emaild" })
         } else {
-            const status = await bcrypt.compare(password, user.password)
-            if (status) {
-                const userId = user._id
-                const token = jwt.sign({ userId }, process.env.JWT_SECRET_KEY, { expiresIn: 300000 })
 
-                return res.status(200).json({ logedIn: true, token: token, userId: user._id, userName: user.userName, message: "Successfully Loged In" })
+            if (user.verified) {
+
+                const status = await bcrypt.compare(password, user.password)
+                if (status) {
+                    const userId = user._id
+                    const token = jwt.sign({ userId }, process.env.JWT_SECRET_KEY, { expiresIn: 300000 })
+
+                    return res.status(200).json({ logedIn: true, token: token, userId: user._id, userName: user.userName, message: "Successfully Loged In" })
+                } else {
+                    return res.status(404).send({ logedIn: false, message: "Wrong password" })
+                }
+
             } else {
-                return res.status(404).send({ logedIn: false, message: "Wrong password" })
+
+                const token = await new Token({
+                    userId: userDetails._id,
+                    token: crypto.randomBytes(32).toString("hex")
+                }).save()
+
+                const url = `https://keen-mermaid-00ab86.netlify.app/${user._id}/verify/${token.token}`
+                await sendMail(email, "Verfity Email", url)
+
+                return res.status(404).json({ message: "Account not verified, sending verification mail please verify" })
             }
         }
 
