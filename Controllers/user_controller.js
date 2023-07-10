@@ -60,7 +60,7 @@ const userLogin = async (req, res) => {
             } else {
 
                 const token = await new Token({
-                    userId: userDetails._id,
+                    userId: user._id,
                     token: crypto.randomBytes(32).toString("hex")
                 }).save()
 
