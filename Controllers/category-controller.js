@@ -1,4 +1,5 @@
 const Category = require("../Model/category-model")
+const Project = require("../Model/projects-model")
 
 const createCategory = async (req, res) => {
     try {
@@ -37,9 +38,13 @@ const getCategoryData = async (req, res) => {
 const deleteCategory = async (req, res) => {
     try {
         const { deleteCategoryId } = req.params
+        const project = await Project.find({ projectCategory: deleteCategoryId })
+        if (project.length !== 0) {
+            return res.status(400).json({ message: "can't delete the category, delete project related to categroy first" })
+        }
         const response = await Category.deleteOne({ _id: deleteCategoryId })
         if (response) {
-            res.status(200).json({ delete: true, message: "successfully delete the category" })
+            return res.status(200).json({ delete: true, message: "successfully delete the category" })
         }
     } catch (error) {
         res.status(500).json({ message: "Internal server error" })
@@ -67,9 +72,9 @@ const editCategory = async (req, res) => {
     }
 }
 
-module.exports = { 
-    createCategory, 
-    getCategoryData, 
-    deleteCategory, 
-    editCategory 
+module.exports = {
+    createCategory,
+    getCategoryData,
+    deleteCategory,
+    editCategory
 } 

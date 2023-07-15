@@ -42,8 +42,19 @@ const createProject = async (req, res) => {
 const getAllProjects = async (req, res) => {
     try {
         const userId = req.userId
-        const projects = await Project.find({ $or: [{ createdBy: userId }, { projectLead: userId }, { members: { $in: [userId] } }] }).populate("projectLead").populate("projectCategory")
-        res.status(200).json({ projectDetails: projects })
+        const limit = req.params.limit
+        const skip = req.params.skip
+        const projects = await Project.find({ $or: [{ createdBy: userId }, { projectLead: userId }, { members: { $in: [userId] } }] }).populate("projectLead").populate("projectCategory").limit(limit).skip(skip)
+
+        const totalPage = await Project.find({
+            $or: [
+                { createdBy: userId },
+                { projectLead: userId },
+                { members: { $in: [userId] } }
+            ]
+        }).countDocuments()
+
+        res.status(200).json({ projectDetails: projects, totalPage:totalPage })
     } catch (error) {
         res.status(500).json({ message: "Interanl server error" })
     }

@@ -45,7 +45,7 @@ router.delete("/delete-team/:teamId", userAuthentication, deleteTeam)
 // PROJECT MANAGEMENT ROUTES
 router.get("/get-member-and-category", userAuthentication, getMemberAndCategory)
 router.post("/create-project", userAuthentication, createProject)
-router.get("/get-all-project", userAuthentication, getAllProjects)
+router.get("/get-all-project/:limit/:skip", userAuthentication, getAllProjects)
 router.delete('/delete-project/:id', userAuthentication, deleteProject)
 router.get("/get-edit-project-details/:id", userAuthentication, getEditProjectDetails)
 router.post("/edit-project", userAuthentication, editProject)
