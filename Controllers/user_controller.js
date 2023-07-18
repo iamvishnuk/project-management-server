@@ -28,7 +28,7 @@ const userRegisteration = async (req, res) => {
                 token: crypto.randomBytes(32).toString("hex")
             }).save()
 
-            const url = `https://keen-mermaid-00ab86.netlify.app/${userDetails._id}/verify/${token.token}`
+            const url = `https://keen-mermaid-00ab86.netlify.app/user/${userDetails._id}/verify/${token.token}`
             await sendMail(email, "Verfity Email", url)
             res.status(200).json({ userId: userDetails._id, created: true, message: "A verification like send to email" })
         }
@@ -64,7 +64,7 @@ const userLogin = async (req, res) => {
                     token: crypto.randomBytes(32).toString("hex")
                 }).save()
 
-                const url = `https://keen-mermaid-00ab86.netlify.app/${user._id}/verify/${token.token}`
+                const url = `https://keen-mermaid-00ab86.netlify.app/user/${user._id}/verify/${token.token}`
                 await sendMail(email, "Verfity Email", url)
 
                 return res.status(404).json({ message: "Account not verified, sending verification mail please verify" })
@@ -87,7 +87,7 @@ const forgotPasswordSendMail = async (req, res) => {
             token: crypto.randomBytes(32).toString("hex")
         }).save()
 
-        const url = `http://localhost:5173/change-password/${user._id}/verify/${token.token}`
+        const url = `https://keen-mermaid-00ab86.netlify.app/change-password/${user._id}/verify/${token.token}`
         await sendMail(email, "Change password link", url)
         res.status(200).json({ status: true, message: "Verification mail send Successfully" })
     } catch (error) {

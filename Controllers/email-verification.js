@@ -3,6 +3,7 @@ const Token = require("../Model/token-model")
 
 const emailVerification = async (req, res) => {
     try {
+        console.log("this function called")
         const { id } = req.params
         const user = await Users.findOne({ _id: id })
         if (!user) return res.status(400).json({ verified: false, message: "invalid like" })
